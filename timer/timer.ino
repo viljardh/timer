@@ -12,16 +12,54 @@ int DELAY = 0;        // so it happens only 3 times
 
 void setup() {
   int i;
+
   for (i = 5;i<=13;i++) {
     pinMode(i, OUTPUT);
+    digitalWrite(i, HIGH);
   }
+
+  digitalWrite(anode, HIGH);
 }
 
 void loop(){
-  digitalWrite(anode, HIGH);
-  digitalWrite(a, HIGH);
-
+  letterH();
+  delay(500);
+  letterE();
+  delay(500);
+  letterI();
+  delay(500);
 }
 
+void letterH() {
+  clearDisplay();
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
+void letterE() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
+void letterI() {
+  clearDisplay();
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+}
 
+void clearDisplay() {
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+  digitalWrite(dp, HIGH);
+}
 
