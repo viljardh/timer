@@ -1,41 +1,27 @@
-const int G4 = 392;
-const int C5 = 523;
-const int E5 = 659;
-const int G5 = 784;
+const int a = 7;
+const int b = 6;
+const int c = 11;
+const int d = 12;
+const int e = 13;
+const int f = 8;
+const int g = 9;
+const int dp = 10;
+const int anode = 5;
 
-const int piezoOut = 10;
-const int butt = 9;
+int DELAY = 0;        // so it happens only 3 times
 
 void setup() {
-  Serial.begin(9600);
-  pinMode(butt, INPUT_PULLUP);
-}
-
-void loop() {
-  if (digitalRead(butt) == LOW) {
-    playOpen();
+  int i;
+  for (i = 5;i<=13;i++) {
+    pinMode(i, OUTPUT);
   }
 }
 
+void loop(){
+  digitalWrite(anode, HIGH);
+  digitalWrite(a, HIGH);
 
-void playOpen() {
-  tone(piezoOut, C5);
-  delay(100);
-  noTone(piezoOut);
-  delay(100);
-  tone(piezoOut, E5);
-  delay(100);
-  noTone(piezoOut);
-  delay(100);
-  tone(piezoOut, G5);
-  delay(300);
-  noTone(piezoOut);
-  delay(100);
-  tone(piezoOut, E5);
-  delay(100);
-  noTone(piezoOut);
-  delay(100);
-  tone(piezoOut, G5);
-  delay(300);
-  noTone(piezoOut);
 }
+
+
+
