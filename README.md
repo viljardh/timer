@@ -1,2 +1,3 @@
-# timer
-Shooting timer for practice purposes
+# Timer
+
+Going to be a simple dry fire timer for home practice. 
