@@ -8,8 +8,6 @@ const int g = 9;
 const int dp = 10;
 const int anode = 5;
 
-int DELAY = 0;        // so it happens only 3 times
-
 void setup() {
   int i;
 
