@@ -15,11 +15,35 @@ void setup() {
     pinMode(i, OUTPUT);
     digitalWrite(i, HIGH);
   }
-
   digitalWrite(anode, HIGH);
+  sayHi();
 }
 
 void loop(){
+  delay(500);
+  numberZero();
+  delay(500);
+  numberOne();
+  delay(500);
+  numberTwo();
+  delay(500);
+  numberThree();
+  delay(500);
+  numberFour();
+  delay(500);
+  numberFive();
+  delay(500);
+  numberSix();
+  delay(500);
+  numberSeven();
+  delay(500);
+  numberEight();
+  delay(500);
+  numberNine();
+}
+
+// Print print functions
+void sayHi() {
   letterH();
   delay(500);
   letterE();
@@ -27,6 +51,98 @@ void loop(){
   letterI();
   delay(500);
 }
+
+// *** NUMBERS ***
+
+void numberOne() {
+  clearDisplay();
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+}
+
+void numberTwo() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(g, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(d, LOW);
+}
+
+void numberThree() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(g, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+}
+
+void numberFour() {
+  clearDisplay();
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+}
+
+void numberFive() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+}
+
+void numberSix() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(c, LOW);
+}
+
+void numberSeven() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+}
+
+void numberEight() {
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
+
+void numberNine() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
+
+void numberZero() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(d, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+}
+
+// *** LETTERS ***
 
 void letterH() {
   clearDisplay();
