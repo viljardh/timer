@@ -8,38 +8,50 @@ const int g = 9;
 const int dp = 10;
 const int anode = 5;
 
-void setup() {
-  int i;
+const int potPin = A5;
+int potV;
+int pos;
 
+
+void setup() {
+  Serial.begin(9600);
+  int i;
   for (i = 5;i<=13;i++) {
     pinMode(i, OUTPUT);
     digitalWrite(i, HIGH);
   }
   digitalWrite(anode, HIGH);
   sayHi();
+  clearDisplay();
 }
 
 void loop(){
-  delay(500);
-  numberZero();
-  delay(500);
-  numberOne();
-  delay(500);
-  numberTwo();
-  delay(500);
-  numberThree();
-  delay(500);
-  numberFour();
-  delay(500);
-  numberFive();
-  delay(500);
-  numberSix();
-  delay(500);
-  numberSeven();
-  delay(500);
-  numberEight();
-  delay(500);
-  numberNine();
+  potV = analogRead(potPin);
+  pos = map(potV, 0, 1023, 0, 9);
+  Serial.println(pos);
+  switch (pos) {
+    case 0:
+      numberZero();
+    case 1:
+      numberOne();
+    case 2:
+      numberTwo();
+    case 3:
+      numberThree();
+    case 4:
+      numberFour();
+    case 5:
+      numberFive();
+    case 6:
+      numberSix();
+    case 7:
+      numberSeven();
+    case 8:
+      numberEight();
+    case 9:
+      numberNine();
+  }
+
 }
 
 // Print print functions
