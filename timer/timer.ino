@@ -29,27 +29,38 @@ void loop(){
   potV = analogRead(potPin);
   pos = map(potV, 0, 1023, 0, 9);
   Serial.println(pos);
+  
   switch (pos) {
     case 0:
       numberZero();
+      break;
     case 1:
       numberOne();
+      break;
     case 2:
       numberTwo();
+      break;
     case 3:
       numberThree();
+      break;
     case 4:
       numberFour();
+      break;
     case 5:
       numberFive();
+      break;
     case 6:
       numberSix();
+      break;
     case 7:
       numberSeven();
+      break;
     case 8:
       numberEight();
+      break;
     case 9:
       numberNine();
+      break;
   }
 
 }
