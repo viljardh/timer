@@ -68,11 +68,11 @@ void loop(){
 // Print print functions
 void sayHi() {
   letterH();
-  delay(500);
+  delay(333);
   letterE();
-  delay(500);
+  delay(333);
   letterI();
-  delay(500);
+  delay(333);
 }
 
 // *** NUMBERS ***
