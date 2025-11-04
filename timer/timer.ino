@@ -27,7 +27,7 @@ void setup() {
 
 void loop(){
   potV = analogRead(potPin);
-  pos = map(potV, 0, 1023, 0, 9);
+  pos = map(potV, 0, 1023, 0, 10);
   Serial.println(pos);
   
   switch (pos) {
@@ -59,6 +59,9 @@ void loop(){
       numberEight();
       break;
     case 9:
+      numberNine();
+      break;
+    case 10:
       numberNine();
       break;
   }
