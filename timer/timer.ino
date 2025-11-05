@@ -30,24 +30,36 @@ void setup() {
   }
   pinMode(buttStart, INPUT_PULLUP);
   pinMode(buttOpt, INPUT_PULLUP);
+
   digitalWrite(anode, HIGH);
+
   sayHi();
   clearDisplay();
 }
 
 void loop(){
+  // Read potmeter and assign number
+  // higher values get shorter range, so assign 8 and 9 to 9
   potV = analogRead(potPin);
   pos = map(potV, 0, 1023, 0, 10);
   
   displayNumber(pos);
 
+  // If startbutton is pressed, start program
   if (digitalRead(buttStart) == LOW) {
     runProg(pos);
   }
+
+  // Button for options (set timer in seconds)
+  if (digitalRead(buttOpt) == LOW) {
+    tone(piezoOut, 100, 100);
+    opt = pos;
+  }
 }
 
-// Programs
+// *** PROGRAMS ***
 
+// Simple draw timer - Simulates random beep going off during contest
 void drawTimer() {
   tone(piezoOut, 240, 100);
   randInt = random(2000, 5000);
@@ -55,12 +67,24 @@ void drawTimer() {
   tone(piezoOut, 240, 100);
 }
 
+// First programmable program - Extension of draw timer, but you can set
+// amount of seconds before next beep goes off
+void drawTimerTimed(int pos) {
+  randInt = random(2000, 5000);
+  drawTimer();
+  delay(pos*1000);
+  tone(piezoOut, 240, 100);
+}
+
 void runProg(int pos) {
   switch (pos) {
     case 0:
+      numberZero();
       drawTimer();
+      break;
     case 1:
       numberOne();
+      drawTimerTimed(opt);
       break;
     case 2:
       numberTwo();
