@@ -7,19 +7,29 @@ const int f = 8;
 const int g = 9;
 const int dp = 10;
 const int anode = 5;
+const int piezoOut = 3;
+
+const int buttStart = 2;
+const int buttOpt = 4;
+int opt;
 
 const int potPin = A5;
 int potV;
 int pos;
 
+long randInt;
 
 void setup() {
   Serial.begin(9600);
+  randomSeed(analogRead(0));
+
   int i;
   for (i = 5;i<=13;i++) {
     pinMode(i, OUTPUT);
     digitalWrite(i, HIGH);
   }
+  pinMode(buttStart, INPUT_PULLUP);
+  pinMode(buttOpt, INPUT_PULLUP);
   digitalWrite(anode, HIGH);
   sayHi();
   clearDisplay();
@@ -28,12 +38,27 @@ void setup() {
 void loop(){
   potV = analogRead(potPin);
   pos = map(potV, 0, 1023, 0, 10);
-  Serial.println(pos);
   
+  displayNumber(pos);
+
+  if (digitalRead(buttStart) == LOW) {
+    runProg(pos);
+  }
+}
+
+// Programs
+
+void drawTimer() {
+  tone(piezoOut, 240, 100);
+  randInt = random(2000, 5000);
+  delay(randInt);
+  tone(piezoOut, 240, 100);
+}
+
+void runProg(int pos) {
   switch (pos) {
     case 0:
-      numberZero();
-      break;
+      drawTimer();
     case 1:
       numberOne();
       break;
@@ -65,7 +90,43 @@ void loop(){
       numberNine();
       break;
   }
+}
 
+void displayNumber(int no) {
+  switch (pos) {
+    case 0:
+      numberZero();
+    case 1:
+      numberOne();
+      break;
+    case 2:
+      numberTwo();
+      break;
+    case 3:
+      numberThree();
+      break;
+    case 4:
+      numberFour();
+      break;
+    case 5:
+      numberFive();
+      break;
+    case 6:
+      numberSix();
+      break;
+    case 7:
+      numberSeven();
+      break;
+    case 8:
+      numberEight();
+      break;
+    case 9:
+      numberNine();
+      break;
+    case 10:
+      numberNine();
+      break;
+  }
 }
 
 // Print print functions
