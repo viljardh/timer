@@ -13,7 +13,8 @@ Needs a bit of testing for components.
 
 - Change display from 7-segment to LCD
 - Test levels for microphone
-- Record splits, store on stick
+- Record splits
+- Store splits on stick 
 
 ## Wayyyyy todo: 
-- Record splits, send via bluetooth to app
+- Send splits via bluetooth to phone app that connects to DB
