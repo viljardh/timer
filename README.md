@@ -1,3 +1,19 @@
 # Timer
 
-Going to be a simple dry fire timer for home practice. 
+Prototype for shooting timer. Initially for dry fire, hopefully live down the line. 
+
+Needs a bit of testing for components. 
+
+## Features: 
+
+- Random draw timer
+- Random draw timer with adjustable time to complete task
+
+## Todo: 
+
+- Change display from 7-segment to LCD
+- Test levels for microphone
+- Record splits, store on stick
+
+## Wayyyyy todo: 
+- Record splits, send via bluetooth to app
