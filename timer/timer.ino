@@ -20,6 +20,7 @@ int pos;
 const int sampleWindow = 50;
 const int ampPin = A0;
 unsigned int sample;
+const int micTreshold = 800;
 
 long randInt;
 
@@ -60,13 +61,15 @@ void loop(){
     opt = pos;
   }
 
-  // test mic
+}
 
-  unsigned long startMillis = millis(); // Start of sample window
-  unsigned int peakToPeak = 0;   // peak-to-peak level
+// *** PROGRAMS ***
 
-  unsigned int signalMax = 0;
-  unsigned int signalMin = 1024;
+int mic() {
+  long startMillis = millis(); // Start of sample window
+  int peakToPeak = 0;   // peak-to-peak level
+  int signalMax = 0;
+  int signalMin = 1024;
 
   // collect data for 50 mS and then plot data
   while (millis() - startMillis < sampleWindow)
@@ -85,15 +88,12 @@ void loop(){
     }
   }
   peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-  Serial.print("Min:0,");
-  Serial.print("Max:1023,");
-  Serial.print("Sensor:");
-  Serial.println(peakToPeak);
-
-  // end test
+  // Serial.print("Min:0,");
+  // Serial.print("Max:1023,");
+  // Serial.print("Sensor:");
+  // Serial.println(peakToPeak);
+  return peakToPeak;
 }
-
-// *** PROGRAMS ***
 
 // Simple draw timer - Simulates random beep going off during contest
 void drawTimer() {
@@ -112,18 +112,29 @@ void drawTimerTimed(int pos) {
   tone(piezoOut, 240, 100);
 }
 
+void splitsTest() {
+  while (digitalRead(buttOpt) == HIGH) {
+    int out = mic();
+    Serial.println(out);
+  }
+}
+
 void runProg(int pos) {
   switch (pos) {
     case 0:
       numberZero();
+      letterA();
       drawTimer();
       break;
     case 1:
       numberOne();
+      letterA();
       drawTimerTimed(opt);
       break;
     case 2:
       numberTwo();
+      letterA();
+      splitsTest();
       break;
     case 3:
       numberThree();
@@ -295,6 +306,16 @@ void dot() {
 }
 
 // *** LETTERS ***
+
+void letterA() {
+  clearDisplay();
+  digitalWrite(a, LOW);
+  digitalWrite(b, LOW);
+  digitalWrite(c, LOW);
+  digitalWrite(e, LOW);
+  digitalWrite(f, LOW);
+  digitalWrite(g, LOW);
+}
 
 void letterH() {
   clearDisplay();
