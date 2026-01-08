@@ -23,6 +23,8 @@ unsigned int sample;
 const int micTreshold = 500;
 
 int counter = 0;
+long splitSecs[50];
+long splitTenths[50];
 
 long randInt;
 
@@ -67,6 +69,7 @@ void loop(){
 
 // *** PROGRAMS ***
 
+// Initializes microphone
 int mic() {
   long startMillis = millis(); // Start of sample window
   int peakToPeak = 0;   // peak-to-peak level
@@ -111,16 +114,26 @@ void drawTimerTimed(int pos) {
   tone(piezoOut, 240, 100);
 }
 
+// Working on getting a split timer
 void splitsTest() {
   while (digitalRead(buttOpt) == HIGH) {
+    long startMillis = millis();
     int out = mic();
     //Serial.println(out);
     if (out > 300) {
+      long currentMillis = millis();
+      splitSecs[counter] = currentMillis/1000;
+      splitTenths[counter] = (currentMillis/100) % 10;
       counter ++;
-      counter = counter % 10;
     }
     Serial.println(counter);
     displayNumber(counter);
+  }
+  for (int i = 0; i < 10; i++){
+    Serial.print(splitSecs[i]);
+    Serial.print(".");
+    Serial.print(splitTenths[i]);
+    Serial.println();
   }
 }
 
@@ -149,6 +162,7 @@ void runProg(int pos) {
     case 8:
       break;
     case 9:
+      float splitTimes[50];
       break;
     case 10:
       break;
@@ -156,6 +170,9 @@ void runProg(int pos) {
 }
 
 void displayNumber(int no) {
+  if (no > 9) {
+    no = no % 10;
+  }
   switch (no) {
     case 0:
       numberZero();
