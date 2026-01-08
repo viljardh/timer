@@ -123,7 +123,7 @@ void splitsTest() {
     if (out > 300) {
       long currentMillis = millis();
       splitSecs[counter] = currentMillis/1000;
-      splitTenths[counter] = (currentMillis/100) % 10;
+      splitTenths[counter] = currentMillis % 1000;
       counter ++;
     }
     Serial.println(counter);
