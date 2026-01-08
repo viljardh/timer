@@ -17,6 +17,10 @@ const int potPin = A5;
 int potV;
 int pos;
 
+const int sampleWindow = 50;
+const int ampPin = A0;
+unsigned int sample;
+
 long randInt;
 
 void setup() {
@@ -55,6 +59,35 @@ void loop(){
     tone(piezoOut, 100, 100);
     opt = pos;
   }
+
+  // test mic
+
+  unsigned long startMillis = millis(); // Start of sample window
+  unsigned int peakToPeak = 0;   // peak-to-peak level
+
+  unsigned int signalMax = 0;
+  unsigned int signalMin = 1024;
+
+  // collect data for 50 mS and then plot data
+  while (millis() - startMillis < sampleWindow)
+  {
+    sample = analogRead(ampPin);
+    if (sample < 1024)  // toss out spurious readings
+    {
+      if (sample > signalMax)
+      {
+        signalMax = sample;  // save just the max levels
+      }
+      else if (sample < signalMin)
+      {
+        signalMin = sample;  // save just the min levels
+      }
+    }
+  }
+  peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
+  Serial.println(peakToPeak);
+
+  // end test
 }
 
 // *** PROGRAMS ***
