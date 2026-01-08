@@ -20,7 +20,9 @@ int pos;
 const int sampleWindow = 50;
 const int ampPin = A0;
 unsigned int sample;
-const int micTreshold = 800;
+const int micTreshold = 500;
+
+int counter = 0;
 
 long randInt;
 
@@ -71,18 +73,15 @@ int mic() {
   int signalMax = 0;
   int signalMin = 1024;
 
-  // collect data for 50 mS and then plot data
+  // collect data for 50 ms and then plot data
   while (millis() - startMillis < sampleWindow)
   {
     sample = analogRead(ampPin);
-    if (sample < 1024)  // toss out spurious readings
-    {
-      if (sample > signalMax)
-      {
+    if (sample < 1024) {
+      if (sample > signalMax) {
         signalMax = sample;  // save just the max levels
       }
-      else if (sample < signalMin)
-      {
+      else if (sample < signalMin) {
         signalMin = sample;  // save just the min levels
       }
     }
@@ -115,56 +114,49 @@ void drawTimerTimed(int pos) {
 void splitsTest() {
   while (digitalRead(buttOpt) == HIGH) {
     int out = mic();
-    Serial.println(out);
+    //Serial.println(out);
+    if (out > 300) {
+      counter ++;
+      counter = counter % 10;
+    }
+    Serial.println(counter);
+    displayNumber(counter);
   }
 }
 
 void runProg(int pos) {
+  letterA();
   switch (pos) {
     case 0:
-      numberZero();
-      letterA();
       drawTimer();
       break;
     case 1:
-      numberOne();
-      letterA();
       drawTimerTimed(opt);
       break;
     case 2:
-      numberTwo();
-      letterA();
       splitsTest();
       break;
     case 3:
-      numberThree();
       break;
     case 4:
-      numberFour();
       break;
     case 5:
-      numberFive();
       break;
     case 6:
-      numberSix();
       break;
     case 7:
-      numberSeven();
       break;
     case 8:
-      numberEight();
       break;
     case 9:
-      numberNine();
       break;
     case 10:
-      numberNine();
       break;
   }
 }
 
 void displayNumber(int no) {
-  switch (pos) {
+  switch (no) {
     case 0:
       numberZero();
     case 1:
