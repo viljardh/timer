@@ -85,6 +85,9 @@ void loop(){
     }
   }
   peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
+  Serial.print("Min:0,");
+  Serial.print("Max:1023,");
+  Serial.print("Sensor:");
   Serial.println(peakToPeak);
 
   // end test
@@ -284,6 +287,11 @@ void numberZero() {
   digitalWrite(d, LOW);
   digitalWrite(e, LOW);
   digitalWrite(f, LOW);
+}
+
+void dot() {
+  clearDisplay();
+  digitalWrite(dp, LOW);
 }
 
 // *** LETTERS ***
