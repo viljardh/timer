@@ -104,11 +104,11 @@ void shotTimer() {
   while (digitalRead(buttOpt) == HIGH) {
     // for some reason displays 1 when counter is 0, no idea why
     // pray it away when I get OLED
-    Serial.println(counter);
     displayNumber(counter);
     int out = mic();
     //Serial.println(out);
     if (out > micTreshold) {
+      Serial.println(counter);
       long currentMillis = millis() - startMillis;
       splitSecs[counter] = currentMillis/1000;
       splitTenths[counter] = currentMillis % 1000;

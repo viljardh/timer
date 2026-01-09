@@ -8,12 +8,12 @@ Needs a bit of testing for components.
 
 - Random draw timer
 - Random draw timer with adjustable time to complete task
+- Shot timer - Random draw, tracks amount of shots and splits
 
 ## Todo: 
 
-- Change display from 7-segment to LCD
+- Change display from 7-segment to OLED
 - Test levels for microphone
-- Record splits
 - Store splits on stick 
 
 ## Wayyyyy todo: 
