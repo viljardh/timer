@@ -20,7 +20,7 @@ int pos;
 const int sampleWindow = 50;
 const int ampPin = A0;
 unsigned int sample;
-const int micTreshold = 500;
+const int micTreshold = 200;
 
 int counter = 0;
 long splitSecs[50];
@@ -48,9 +48,12 @@ void setup() {
 
 void loop(){
   // Read potmeter and assign number
-  // higher values get shorter range, so assign 8 and 9 to 9
+  // higher values get shorter range, so assign 9 and 10 to 9
   potV = analogRead(potPin);
-  pos = map(potV, 0, 1023, 0, 10);
+  pos = map(potV, 0, 1024, 0, 10);
+  if (pos == 10) {
+    pos = 9;
+  }
   
   displayNumber(pos);
 
@@ -69,34 +72,6 @@ void loop(){
 
 // *** PROGRAMS ***
 
-// Initializes microphone
-int mic() {
-  long startMillis = millis(); // Start of sample window
-  int peakToPeak = 0;   // peak-to-peak level
-  int signalMax = 0;
-  int signalMin = 1024;
-
-  // collect data for 50 ms and then plot data
-  while (millis() - startMillis < sampleWindow)
-  {
-    sample = analogRead(ampPin);
-    if (sample < 1024) {
-      if (sample > signalMax) {
-        signalMax = sample;  // save just the max levels
-      }
-      else if (sample < signalMin) {
-        signalMin = sample;  // save just the min levels
-      }
-    }
-  }
-  peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-  // Serial.print("Min:0,");
-  // Serial.print("Max:1023,");
-  // Serial.print("Sensor:");
-  // Serial.println(peakToPeak);
-  return peakToPeak;
-}
-
 // Simple draw timer - Simulates random beep going off during contest
 void drawTimer() {
   tone(piezoOut, 240, 100);
@@ -106,7 +81,8 @@ void drawTimer() {
 }
 
 // First programmable program - Extension of draw timer, but you can set
-// amount of seconds before next beep goes off
+// amount of seconds before next beep goes off, giving yoursel f x seconds
+// to achieve objective
 void drawTimerTimed(int pos) {
   randInt = random(2000, 5000);
   drawTimer();
@@ -120,7 +96,7 @@ void splitsTest() {
   while (digitalRead(buttOpt) == HIGH) {
     int out = mic();
     //Serial.println(out);
-    if (out > 300) {
+    if (out > micTreshold) {
       long currentMillis = millis() - startMillis;
       splitSecs[counter] = currentMillis/1000;
       splitTenths[counter] = currentMillis % 1000;
@@ -129,14 +105,31 @@ void splitsTest() {
     Serial.println(counter);
     displayNumber(counter);
   }
-  for (int i = 0; i < 10; i++){
+  printAllSplits();
+}
+
+// cpp moment
+void resetAll() {
+  for (int i = 0; i < counter; i++) {
+    splitSecs[i] = 0;
+    splitTenths[i] = 0;
+  }
+  counter = 0;
+  Serial.println("Reset");
+}
+
+void printAllSplits() {
+  int i = 0;
+  while (i < counter) {
     Serial.print(splitSecs[i]);
     Serial.print(".");
     Serial.print(splitTenths[i]);
     Serial.println();
+    i++;
   }
 }
 
+// Runs program based on pot pos
 void runProg(int pos) {
   letterA();
   switch (pos) {
@@ -162,12 +155,15 @@ void runProg(int pos) {
     case 8:
       break;
     case 9:
-      float splitTimes[50];
+      resetAll();
       break;
     case 10:
+      resetAll();
       break;
   }
 }
+
+// Numbers displays
 
 void displayNumber(int no) {
   if (no > 9) {
@@ -217,6 +213,34 @@ void sayHi() {
   delay(333);
   letterI();
   delay(333);
+}
+
+// Initializes microphone
+int mic() {
+  long startMillis = millis(); // Start of sample window
+  int peakToPeak = 0;   // peak-to-peak level
+  int signalMax = 0;
+  int signalMin = 1024;
+
+  // collect data for 50 ms and then plot data
+  while (millis() - startMillis < sampleWindow)
+  {
+    sample = analogRead(ampPin);
+    if (sample < 1024) {
+      if (sample > signalMax) {
+        signalMax = sample;  // save just the max levels
+      }
+      else if (sample < signalMin) {
+        signalMin = sample;  // save just the min levels
+      }
+    }
+  }
+  peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
+  // Serial.print("Min:0,");
+  // Serial.print("Max:1023,");
+  // Serial.print("Sensor:");
+  // Serial.println(peakToPeak);
+  return peakToPeak;
 }
 
 // *** NUMBERS ***
