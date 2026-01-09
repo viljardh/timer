@@ -1,3 +1,4 @@
+// init 7-seg pos
 const int a = 7;
 const int b = 6;
 const int c = 11;
@@ -9,23 +10,28 @@ const int dp = 10;
 const int anode = 5;
 const int piezoOut = 3;
 
+// init buttons and options "menu"
 const int buttStart = 2;
 const int buttOpt = 4;
 int opt;
 
+// using a potmeter for options 
 const int potPin = A5;
 int potV;
 int pos;
 
+// init for mix
 const int sampleWindow = 50;
 const int ampPin = A0;
 unsigned int sample;
 const int micTreshold = 200;
 
+// tracking shooting stats
 int counter = 0;
 long splitSecs[50];
 long splitTenths[50];
 
+// handy to have!
 long randInt;
 
 void setup() {
@@ -49,6 +55,7 @@ void setup() {
 void loop(){
   // Read potmeter and assign number
   // higher values get shorter range, so assign 9 and 10 to 9
+  // stupid fix for stupid problem
   potV = analogRead(potPin);
   pos = map(potV, 0, 1024, 0, 10);
   if (pos == 10) {
@@ -90,10 +97,15 @@ void drawTimerTimed(int pos) {
   tone(piezoOut, 240, 100);
 }
 
-// Working on getting a split timer
-void splitsTest() {
+// Shot timer - Starts with regular draw, times and tracks shots. 
+void shotTimer() {
+  drawTimer();
   long startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
+    // for some reason displays 1 when counter is 0, no idea why
+    // pray it away when I get OLED
+    Serial.println(counter);
+    displayNumber(counter);
     int out = mic();
     //Serial.println(out);
     if (out > micTreshold) {
@@ -102,8 +114,6 @@ void splitsTest() {
       splitTenths[counter] = currentMillis % 1000;
       counter ++;
     }
-    Serial.println(counter);
-    displayNumber(counter);
   }
   printAllSplits();
 }
@@ -140,7 +150,7 @@ void runProg(int pos) {
       drawTimerTimed(opt);
       break;
     case 2:
-      splitsTest();
+      shotTimer();
       break;
     case 3:
       break;
@@ -155,9 +165,6 @@ void runProg(int pos) {
     case 8:
       break;
     case 9:
-      resetAll();
-      break;
-    case 10:
       resetAll();
       break;
   }
@@ -197,9 +204,6 @@ void displayNumber(int no) {
       numberEight();
       break;
     case 9:
-      numberNine();
-      break;
-    case 10:
       numberNine();
       break;
   }
