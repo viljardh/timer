@@ -116,12 +116,12 @@ void drawTimerTimed(int pos) {
 
 // Working on getting a split timer
 void splitsTest() {
+  long startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
-    long startMillis = millis();
     int out = mic();
     //Serial.println(out);
     if (out > 300) {
-      long currentMillis = millis();
+      long currentMillis = millis() - startMillis;
       splitSecs[counter] = currentMillis/1000;
       splitTenths[counter] = currentMillis % 1000;
       counter ++;
