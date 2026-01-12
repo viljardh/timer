@@ -80,11 +80,15 @@ void loop(){
 // *** PROGRAMS ***
 
 // Simple draw timer - Simulates random beep going off during contest
+// Addition: Opt position now denotes how many shots you want to do in series
+// So I don't have to reset every flippin time
 void drawTimer() {
   tone(piezoOut, 240, 100);
-  randInt = random(2000, 5000);
-  delay(randInt);
-  tone(piezoOut, 240, 100);
+  for (int i = 0; i < opt; i++) {
+    randInt = random(2000, 5000);
+    delay(randInt);
+    tone(piezoOut, 240, 100);
+  }
 }
 
 // First programmable program - Extension of draw timer, but you can set
