@@ -5,6 +5,8 @@ width = 50;
 height = 20;
 radius = 10;
 
+swidth = 24.5;
+sheight = 15.2;
 
 translate([10, 10, 0]){ 
     difference() {
@@ -29,11 +31,14 @@ translate([width*2, 10, 0]) {
                     }
                 }
             }
-            translate([length/5, width/5, -2]) {
-                cube(10);
+            translate([3, -1, -2]) {
+                cube([swidth, sheight, 5]);
             }
             translate([length/2 + 2, width/2 + 2, -2]) {
-                cylinder(h=height, r = 4, center = true);
+                cylinder(h=height, r = 4.9, center = true);
+            }
+            translate([length/5, width/2, -2]) {
+                cylinder(h=height, r = 2.9, center = true);
             }
         }
     }
