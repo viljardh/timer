@@ -15,6 +15,7 @@ Needs a bit of testing for components.
 - Change display from 7-segment to OLED
 - Test levels for microphone
 - Store splits on stick 
+- Display final time
 
 ## Wayyyyy todo: 
 - Send splits via bluetooth to phone app that connects to DB
