@@ -14,13 +14,14 @@ uint8_t opt = 1;
 const uint8_t potPin = A1;
 const uint8_t maxPos = 9;
 
-// init for mix
+// init for mic
 const uint8_t sampleWindow = 50;
 const uint8_t ampPin = A0;
 uint16_t sample;
-const uint8_t micTreshold = 200;
+const uint8_t micTreshold = 200; //REALLY LOW, GONNA MAX  TO OL' 1023
 
 // tracking shooting stats
+// May increase if necessary, but SRAM is insanely limited
 uint8_t counter = 0;
 const uint8_t maxSplits = 42;
 uint16_t splitSecs[maxSplits];
@@ -36,8 +37,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 unsigned long randInt = 0UL;
 
 void setup() {
-
-  Serial.begin(9600);
+  Serial.begin(115200);
   randomSeed(analogRead(0));
   
   pinMode(buzzPin, OUTPUT);
@@ -48,6 +48,7 @@ void setup() {
   Wire.begin();
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 
+  // display friendly welcome message
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(14, 12);
@@ -71,6 +72,8 @@ void loop(){
   displayProg(pos);
 
   // Button for options (set timer in seconds)
+  // This is really hacky for memory reasons abstracted
+  // away by Arduino IDE
   if (digitalRead(buttOpt) == LOW) {
     opt = pos;
   }
@@ -79,6 +82,8 @@ void loop(){
 // *** PROGRAMS ***
 
 // display and select program
+// Start button checks in here because abovementioned
+// No I don't know why
 void displayProg(uint8_t no) {
   switch(no) {
     case 0:
@@ -136,11 +141,12 @@ void drawTimer(uint8_t no) {
 }
 
 // First programmable program - Extension of draw timer, but you can set
-// amount of seconds before next beep goes off, giving yoursel f x seconds
+// amount of seconds before next beep goes off, giving yourself x seconds
 // to achieve objective
 void drawTimerTimed(uint8_t no) {
   randInt = random(2000UL, 5000UL);
   drawTimer(1);
+  // Invert display to light up, signify activity
   display.invertDisplay(true);
   delay(no*1000);
   beep();
@@ -151,10 +157,13 @@ void drawTimerTimed(uint8_t no) {
 void shotTimer() {
   drawTimer(1);
   display.invertDisplay(true);
+  // Starts timer
   uint32_t startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
     uint16_t out = mic();
+    // If noise is substantial enough
     if (out > micTreshold) {
+      // Do a checkpoint and store splits
       unsigned long cur = millis() - startMillis;
       uint16_t s = (uint16_t)(cur / 1000UL);
       uint8_t cs = (uint8_t)((cur % 1000UL) / 10UL); // centiseconds 0..99
@@ -162,8 +171,10 @@ void shotTimer() {
       splitTenths[counter] = cs;
       counter ++;
 
+      // No leakage!!!
       if (counter >= maxSplits) counter = maxSplits;
 
+      // There's no prettier way of doing this
       display.clearDisplay();
       display.setTextSize(3);
       display.setCursor(50, 6);
@@ -185,9 +196,11 @@ void shotTimer() {
 void readSplits() {
   while (digitalRead(buttOpt) == HIGH) {
 
+    // Same logic as picking program
     uint16_t potV = analogRead(potPin);
     uint8_t pos = map(potV, 0, 1024, 0, counter);
     
+    // Avert thine gaze
     display.clearDisplay();
     display.setTextSize(3);
     display.setCursor(55, 6); 
