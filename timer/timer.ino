@@ -3,28 +3,28 @@
 #include <Adafruit_SSD1306.h>
 
 // init buzzer
-const int buzzPin = 3;
+const uint8_t buzzPin = 3;
 
 // init buttons and options "menu"
-const int buttStart = 2;
-const int buttOpt = 4;
+const uint8_t buttStart = 2;
+const uint8_t buttOpt = 4;
 int opt;
 
 // init potmeter
-const int potPin = A1;
+const uint8_t potPin = A1;
 int potV;
-int pos;
+uint8_t pos;
 
 // init for mix
-const int sampleWindow = 50;
-const int ampPin = A0;
+const uint8_t sampleWindow = 50;
+const uint8_t ampPin = A0;
 unsigned int sample;
-const int micTreshold = 200;
+const uint8_t micTreshold = 500;
 
 // tracking shooting stats
 int counter = 0;
-long splitSecs[50];
-long splitTenths[50];
+int splitSecs[32];
+int splitTenths[32];
 
 // init screen
 #define SCREEN_WIDTH 128
@@ -33,12 +33,12 @@ long splitTenths[50];
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // handy to have!
-long randInt;
-int i;
+unsigned int randInt;
+uint8_t i;
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   randomSeed(analogRead(0));
   
   pinMode(buzzPin, OUTPUT);
@@ -82,13 +82,13 @@ void loop(){
 // *** PROGRAMS ***
 
 // display and select program
-void displayProg(int no) {
+void displayProg(uint8_t no) {
   switch(no) {
     case 0:
       displayProgText("Draw");
       // If startbutton is pressed, start program
       if (digitalRead(buttStart) == LOW) {
-        drawTimer();
+        drawTimer(opt);
       }
       break;
     case 1:
@@ -99,6 +99,9 @@ void displayProg(int no) {
       break;
     case 2:
       displayProgText("String");
+      if (digitalRead(buttStart) == LOW) {
+        shotTimer();
+      }
       break;
     case 3:
       //insert
@@ -131,10 +134,10 @@ void displayProg(int no) {
 // Simple draw timer - Simulates random beep going off during contest
 // Addition: Opt position now denotes how many shots you want to do in series
 // So I don't have to reset every flippin time
-void drawTimer() {
+void drawTimer(uint8_t no) {
   beep();
   areYouReady();
-  for (int i = 0; i < opt; i++) {
+  for (i = 0; i < no; i++) {
     randInt = random(2000, 5000);
     delay(randInt);
   beep();
@@ -144,25 +147,30 @@ void drawTimer() {
 // First programmable program - Extension of draw timer, but you can set
 // amount of seconds before next beep goes off, giving yoursel f x seconds
 // to achieve objective
-void drawTimerTimed(int pos) {
+void drawTimerTimed(uint8_t no) {
   randInt = random(2000, 5000);
-  drawTimer();
-  delay(pos*1000);
+  drawTimer(1);
+  delay(no*1000);
   beep();
 }
 
 // Shot timer - Starts with regular draw, times and tracks shots. 
 void shotTimer() {
-  drawTimer();
-  long startMillis = millis();
+  drawTimer(1);
+  display.clearDisplay();
+  display.setTextSize(3);
+  display.setCursor(0, 0);
+  display.println(counter);
+  display.display();
+  delay(10); 
+  int startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
     // for some reason displays 1 when counter is 0, no idea why
     // pray it away when I get OLED
     int out = mic();
-    //Serial.println(out);
     if (out > micTreshold) {
       Serial.println(counter);
-      long currentMillis = millis() - startMillis;
+      int currentMillis = millis() - startMillis;
       splitSecs[counter] = currentMillis/1000;
       splitTenths[counter] = currentMillis % 1000;
       counter ++;
@@ -173,7 +181,7 @@ void shotTimer() {
 
 // cpp moment
 void resetAll() {
-  for (int i = 0; i < counter; i++) {
+  for (i = 0; i < counter; i++) {
     splitSecs[i] = 0;
     splitTenths[i] = 0;
   }
@@ -182,7 +190,7 @@ void resetAll() {
 }
 
 void printAllSplits() {
-  int i = 0;
+  i = 0;
   while (i < counter) {
     Serial.print(splitSecs[i]);
     Serial.print(".");
@@ -194,7 +202,7 @@ void printAllSplits() {
 
 // Initializes microphone
 int mic() {
-  long startMillis = millis(); // Start of sample window
+  int startMillis = millis(); // Start of sample window
   int peakToPeak = 0;   // peak-to-peak level
   int signalMax = 0;
   int signalMin = 1024;
@@ -232,11 +240,11 @@ void displayProgText(String text) {
   display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(0, 0);
-  display.print("Prog: ");
+  display.print('P');
   display.println(pos);
   display.println(text);
   display.println("");
-  display.print("Option: ");
+  display.print('O');
   display.println(opt);
   display.display();
   delay(10); 
