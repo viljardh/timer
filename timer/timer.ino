@@ -8,23 +8,21 @@ const uint8_t buzzPin = 3;
 // init buttons and options "menu"
 const uint8_t buttStart = 2;
 const uint8_t buttOpt = 4;
-int opt;
+uint8_t opt = 1;
 
 // init potmeter
 const uint8_t potPin = A1;
-int potV;
-uint8_t pos;
 
 // init for mix
 const uint8_t sampleWindow = 50;
 const uint8_t ampPin = A0;
-unsigned int sample;
-const uint8_t micTreshold = 500;
+uint16_t sample;
+const uint8_t micTreshold = 200;
 
 // tracking shooting stats
-int counter = 0;
-int splitSecs[32];
-int splitTenths[32];
+uint8_t counter = 0;
+uint16_t splitSecs[42];
+uint16_t  splitTenths[42];
 
 // init screen
 #define SCREEN_WIDTH 128
@@ -33,7 +31,7 @@ int splitTenths[32];
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // handy to have!
-unsigned int randInt;
+unsigned long randInt = 0UL;
 uint8_t i;
 
 void setup() {
@@ -53,8 +51,8 @@ void setup() {
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(14, 12);
   display.setTextSize(2);
-  display.println("Go fast");
-  display.println("Don't suck");
+  display.println(F("Go fast"));
+  display.println(F("Don't suck"));
   display.display();
   delay(2000); 
 }
@@ -64,8 +62,8 @@ void loop(){
   // Read potmeter and assign number
   // higher values get shorter range, so assign 9 and 10 to 9
   // stupid fix for stupid problem
-  potV = analogRead(potPin);
-  pos = map(potV, 0, 1024, 0, 10);
+  uint16_t potV = analogRead(potPin);
+  uint8_t pos = map(potV, 0, 1024, 0, 10);
   if (pos == 10) {
     pos = 9;
   }
@@ -85,26 +83,26 @@ void loop(){
 void displayProg(uint8_t no) {
   switch(no) {
     case 0:
-      displayProgText("Draw");
+      displayProgText(no);
       // If startbutton is pressed, start program
       if (digitalRead(buttStart) == LOW) {
         drawTimer(opt);
       }
       break;
     case 1:
-      displayProgText("Objective");
+      displayProgText(no);
       if (digitalRead(buttStart) == LOW) {
         drawTimerTimed(opt);
       }
       break;
     case 2:
-      displayProgText("String");
+      displayProgText(no);
       if (digitalRead(buttStart) == LOW) {
         shotTimer();
       }
       break;
     case 3:
-      //insert
+      displayProgText(no);
       break;
     case 4:
       //insert
@@ -122,10 +120,12 @@ void displayProg(uint8_t no) {
       //insert
       break;
     case 9:
-      displayProgText("Reset");
+      displayProgText(no);
       if (digitalRead(buttStart) == LOW) {
+        display.invertDisplay(true);
         resetAll();
       }
+      display.invertDisplay(false);
       break;
     
   }
@@ -136,47 +136,56 @@ void displayProg(uint8_t no) {
 // So I don't have to reset every flippin time
 void drawTimer(uint8_t no) {
   beep();
-  areYouReady();
+  display.invertDisplay(true);
   for (i = 0; i < no; i++) {
-    randInt = random(2000, 5000);
+    randInt = random(2000UL, 5000UL);
     delay(randInt);
   beep();
   }
+  display.invertDisplay(false);
 }
 
 // First programmable program - Extension of draw timer, but you can set
 // amount of seconds before next beep goes off, giving yoursel f x seconds
 // to achieve objective
 void drawTimerTimed(uint8_t no) {
-  randInt = random(2000, 5000);
+  randInt = random(2000UL, 5000UL);
   drawTimer(1);
+  display.invertDisplay(true);
   delay(no*1000);
   beep();
+  display.invertDisplay(false);
 }
 
 // Shot timer - Starts with regular draw, times and tracks shots. 
 void shotTimer() {
+
   drawTimer(1);
-  display.clearDisplay();
-  display.setTextSize(3);
-  display.setCursor(0, 0);
-  display.println(counter);
-  display.display();
-  delay(10); 
-  int startMillis = millis();
+
+  display.invertDisplay(true);
+  uint32_t startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
-    // for some reason displays 1 when counter is 0, no idea why
-    // pray it away when I get OLED
-    int out = mic();
+    uint16_t out = mic();
     if (out > micTreshold) {
-      Serial.println(counter);
-      int currentMillis = millis() - startMillis;
-      splitSecs[counter] = currentMillis/1000;
-      splitTenths[counter] = currentMillis % 1000;
+      uint32_t currentMillis = millis() - startMillis;
+      splitSecs[counter] = (uint16_t)(currentMillis/1000UL);
+      splitTenths[counter] = (uint16_t)(currentMillis % 1000UL);
       counter ++;
+
+      display.clearDisplay();
+      display.setTextSize(3);
+      display.setCursor(50, 6);
+      display.println(counter);
+      display.setCursor(50, 30);
+      display.print(splitSecs[counter-1]);
+      display.print('.');
+      display.print(splitTenths[counter-1]);
+      display.display();
+      delay(10); 
     }
   }
   printAllSplits();
+  display.invertDisplay(false);
 }
 
 // cpp moment
@@ -193,7 +202,7 @@ void printAllSplits() {
   i = 0;
   while (i < counter) {
     Serial.print(splitSecs[i]);
-    Serial.print(".");
+    Serial.print('.');
     Serial.print(splitTenths[i]);
     Serial.println();
     i++;
@@ -201,11 +210,11 @@ void printAllSplits() {
 }
 
 // Initializes microphone
-int mic() {
-  int startMillis = millis(); // Start of sample window
-  int peakToPeak = 0;   // peak-to-peak level
-  int signalMax = 0;
-  int signalMin = 1024;
+uint16_t mic() {
+  uint32_t startMillis = millis(); // Start of sample window
+  uint16_t peakToPeak = 0;   // peak-to-peak level
+  uint16_t signalMax = 0;
+  uint16_t signalMin = 1024;
 
   // collect data for 50 ms and then plot data
   while (millis() - startMillis < sampleWindow)
@@ -221,10 +230,6 @@ int mic() {
     }
   }
   peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-  // Serial.print("Min:0,");
-  // Serial.print("Max:1023,");
-  // Serial.print("Sensor:");
-  // Serial.println(peakToPeak);
   return peakToPeak;
 }
 
@@ -236,29 +241,15 @@ void beep() {
 }
 
 // displays program and option
-void displayProgText(String text) {
+void displayProgText(uint8_t pos) {
   display.clearDisplay();
-  display.setTextSize(2);
-  display.setCursor(0, 0);
+  display.setTextSize(3);
+  display.setCursor(50, 6);
   display.print('P');
   display.println(pos);
-  display.println(text);
-  display.println("");
+  display.setCursor(50, 30);
   display.print('O');
   display.println(opt);
-  display.display();
-  delay(10); 
-}
-
-// showing that we're in action
-void areYouReady() {
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setCursor(0, 0);
-  display.println("Are you");
-  display.println("ready?");
-  display.println("");
-  display.println("Stand by!");
   display.display();
   delay(10); 
 }
