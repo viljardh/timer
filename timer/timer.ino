@@ -44,38 +44,47 @@ int i;
 
 void setup() {
 
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(1);
-  display.setCursor(4, 28);
-  display.println("Go fast, don't suck!");
-  display.display();
-  delay(2000); 
-  Serial.begin(9600);
+  Serial.begin(115200);
   randomSeed(analogRead(0));
   
   pinMode(buzzPin, OUTPUT);
   pinMode(buttStart, INPUT_PULLUP);
   pinMode(buttOpt, INPUT_PULLUP);
+  
+  // setup screen
+  Wire.begin();
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 28);
+  display.setTextSize(2);
+  display.println("Go fast");
+  display.println("Don't suck");
+  display.display();
+  delay(2000); 
 
-  beep();
 }
 
 void loop(){
 
-  ball();
   // Read potmeter and assign number
   // higher values get shorter range, so assign 9 and 10 to 9
   // stupid fix for stupid problem
-  // potV = analogRead(potPin);
-  // pos = map(potV, 0, 1024, 0, 10);
-  // if (pos == 10) {
-  //   pos = 9;
-  // }
+  potV = analogRead(potPin);
+  pos = map(potV, 0, 1024, 0, 10);
+  if (pos == 10) {
+    pos = 9;
+  }
   
-  // //displayNumber(pos);
+  // Show dynamic message
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setCursor(4, 28);
+  display.print("Pot pos: ");
+  display.println(pos);
+  display.display();
+  delay(100);  // Controls speed
 
   // // If startbutton is pressed, start program
   // if (digitalRead(buttStart) == LOW) {
@@ -269,11 +278,9 @@ void ball() {
 
   // Bounce off edges
   if (ballX <= ballRadius || ballX >= (SCREEN_WIDTH - ballRadius)) {
-    beep();
     ballDX = -ballDX;
   }
   if (ballY <= ballRadius || ballY >= (SCREEN_HEIGHT - ballRadius)) {
-    beep();
     ballDY = -ballDY;
   }
 
