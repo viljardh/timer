@@ -12,6 +12,7 @@ uint8_t opt = 1;
 
 // init potmeter
 const uint8_t potPin = A1;
+const uint8_t maxPos = 9;
 
 // init for mix
 const uint8_t sampleWindow = 50;
@@ -21,18 +22,18 @@ const uint8_t micTreshold = 200;
 
 // tracking shooting stats
 uint8_t counter = 0;
-uint16_t splitSecs[42];
-uint16_t  splitTenths[42];
+const uint8_t maxSplits = 42;
+uint16_t splitSecs[maxSplits];
+uint8_t  splitTenths[maxSplits];
 
 // init screen
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
-#define OLED_RESET     -1
+#define OLED_RESET    -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // handy to have!
 unsigned long randInt = 0UL;
-uint8_t i;
 
 void setup() {
 
@@ -64,9 +65,7 @@ void loop(){
   // stupid fix for stupid problem
   uint16_t potV = analogRead(potPin);
   uint8_t pos = map(potV, 0, 1024, 0, 10);
-  if (pos == 10) {
-    pos = 9;
-  }
+  if (pos > maxPos) pos = maxPos;
   
   displayProg(pos);
 
@@ -102,30 +101,18 @@ void displayProg(uint8_t no) {
       }
       break;
     case 3:
-      displayProgText(no);
-      break;
-    case 4:
-      //insert
-      break;
-    case 5:
-      //insert
-      break;
-    case 6:
-      //insert
-      break;
-    case 7:
-      //insert
-      break;
-    case 8:
-      //insert
       break;
     case 9:
       displayProgText(no);
       if (digitalRead(buttStart) == LOW) {
         display.invertDisplay(true);
+        delay(250);
         resetAll();
       }
       display.invertDisplay(false);
+      break;
+    default:
+      displayProgText(no);
       break;
     
   }
@@ -137,7 +124,7 @@ void displayProg(uint8_t no) {
 void drawTimer(uint8_t no) {
   beep();
   display.invertDisplay(true);
-  for (i = 0; i < no; i++) {
+  for (uint8_t i = 0; i < no; i++) {
     randInt = random(2000UL, 5000UL);
     delay(randInt);
   beep();
@@ -163,22 +150,27 @@ void shotTimer() {
   drawTimer(1);
 
   display.invertDisplay(true);
+
   uint32_t startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
     uint16_t out = mic();
     if (out > micTreshold) {
-      uint32_t currentMillis = millis() - startMillis;
-      splitSecs[counter] = (uint16_t)(currentMillis/1000UL);
-      splitTenths[counter] = (uint16_t)(currentMillis % 1000UL);
+      unsigned long cur = millis() - startMillis;
+        uint16_t s = (uint16_t)(cur / 1000UL);
+        uint8_t cs = (uint8_t)((cur % 1000UL) / 10UL); // centiseconds 0..99
+        splitSecs[counter] = s;
+        splitTenths[counter] = cs;
       counter ++;
 
       display.clearDisplay();
       display.setTextSize(3);
       display.setCursor(50, 6);
       display.println(counter);
-      display.setCursor(50, 30);
+      display.setCursor(20, 30);
+      if (splitSecs[counter - 1] < 10) display.print('0'); 
       display.print(splitSecs[counter-1]);
       display.print('.');
+      if (splitTenths[counter - 1] < 10) display.print('0'); 
       display.print(splitTenths[counter-1]);
       display.display();
       delay(10); 
@@ -190,7 +182,7 @@ void shotTimer() {
 
 // cpp moment
 void resetAll() {
-  for (i = 0; i < counter; i++) {
+  for (uint8_t i = 0; i < counter; i++) {
     splitSecs[i] = 0;
     splitTenths[i] = 0;
   }
@@ -199,7 +191,7 @@ void resetAll() {
 }
 
 void printAllSplits() {
-  i = 0;
+  uint8_t i = 0;
   while (i < counter) {
     Serial.print(splitSecs[i]);
     Serial.print('.');
@@ -212,7 +204,6 @@ void printAllSplits() {
 // Initializes microphone
 uint16_t mic() {
   uint32_t startMillis = millis(); // Start of sample window
-  uint16_t peakToPeak = 0;   // peak-to-peak level
   uint16_t signalMax = 0;
   uint16_t signalMin = 1024;
 
@@ -229,8 +220,7 @@ uint16_t mic() {
       }
     }
   }
-  peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-  return peakToPeak;
+  return signalMax - signalMin;  // max - min = peak-peak amplitude
 }
 
 // buzzer beep
