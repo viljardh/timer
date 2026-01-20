@@ -51,13 +51,12 @@ void setup() {
 
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 28);
+  display.setCursor(14, 12);
   display.setTextSize(2);
   display.println("Go fast");
   display.println("Don't suck");
   display.display();
   delay(2000); 
-
 }
 
 void loop(){
@@ -82,11 +81,59 @@ void loop(){
 
 // *** PROGRAMS ***
 
+// display and select program
+void displayProg(int no) {
+  switch(no) {
+    case 0:
+      displayProgText("Draw");
+      // If startbutton is pressed, start program
+      if (digitalRead(buttStart) == LOW) {
+        drawTimer();
+      }
+      break;
+    case 1:
+      displayProgText("Objective");
+      if (digitalRead(buttStart) == LOW) {
+        drawTimerTimed(opt);
+      }
+      break;
+    case 2:
+      displayProgText("String");
+      break;
+    case 3:
+      //insert
+      break;
+    case 4:
+      //insert
+      break;
+    case 5:
+      //insert
+      break;
+    case 6:
+      //insert
+      break;
+    case 7:
+      //insert
+      break;
+    case 8:
+      //insert
+      break;
+    case 9:
+      displayProgText("Reset");
+      if (digitalRead(buttStart) == LOW) {
+        resetAll();
+      }
+      break;
+    
+  }
+}
+
 // Simple draw timer - Simulates random beep going off during contest
 // Addition: Opt position now denotes how many shots you want to do in series
 // So I don't have to reset every flippin time
 void drawTimer() {
   beep();
+  areYouReady();
   for (int i = 0; i < opt; i++) {
     randInt = random(2000, 5000);
     delay(randInt);
@@ -111,7 +158,6 @@ void shotTimer() {
   while (digitalRead(buttOpt) == HIGH) {
     // for some reason displays 1 when counter is 0, no idea why
     // pray it away when I get OLED
-    //displayNumber(counter);
     int out = mic();
     //Serial.println(out);
     if (out > micTreshold) {
@@ -146,78 +192,6 @@ void printAllSplits() {
   }
 }
 
-// Runs program based on pot pos
-void runProg(int pos) {
-  //letterA();
-  switch (pos) {
-    case 0:
-      drawTimer();
-      break;
-    case 1:
-      drawTimerTimed(opt);
-      break;
-    case 2:
-      shotTimer();
-      break;
-    case 3:
-      break;
-    case 4:
-      break;
-    case 5:
-      break;
-    case 6:
-      break;
-    case 7:
-      break;
-    case 8:
-      break;
-    case 9:
-      resetAll();
-      break;
-  }
-}
-
-// display program
-void displayProg(int no) {
-  switch(no) {
-    case 0:
-      displayText("Draw timer");
-      // If startbutton is pressed, start program
-      if (digitalRead(buttStart) == LOW) {
-        runProg(no);
-      }
-      break;
-    case 1:
-      displayText("Objective timer");
-      break;
-    case 2:
-      //insert
-      break;
-    case 3:
-      //insert
-      break;
-    case 4:
-      //insert
-      break;
-    case 5:
-      //insert
-      break;
-    case 6:
-      //insert
-      break;
-    case 7:
-      //insert
-      break;
-    case 8:
-      //insert
-      break;
-    case 9:
-      //insert
-      break;
-    
-  }
-}
-
 // Initializes microphone
 int mic() {
   long startMillis = millis(); // Start of sample window
@@ -246,21 +220,37 @@ int mic() {
   return peakToPeak;
 }
 
+// buzzer beep
 void beep() {
   digitalWrite(buzzPin, HIGH);
   delay(100);
   digitalWrite(buzzPin, LOW);
 }
 
-void displayText(String text) {
+// displays program and option
+void displayProgText(String text) {
   display.clearDisplay();
-  display.setTextSize(1);
+  display.setTextSize(2);
   display.setCursor(0, 0);
   display.print("Prog: ");
-  display.println(pos+1);
+  display.println(pos);
   display.println(text);
+  display.println("");
   display.print("Option: ");
   display.println(opt);
+  display.display();
+  delay(10); 
+}
+
+// showing that we're in action
+void areYouReady() {
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setCursor(0, 0);
+  display.println("Are you");
+  display.println("ready?");
+  display.println("");
+  display.println("Stand by!");
   display.display();
   delay(10); 
 }
