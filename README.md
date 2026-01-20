@@ -9,13 +9,13 @@ Needs a bit of testing for components.
 - Random draw timer
 - Random draw timer with adjustable time to complete task
 - Shot timer - Random draw, tracks amount of shots and splits
-- OLED showing more details!
+- Split overview
 
 ## Todo: 
 
 - Test levels for microphone
-- Store splits on stick 
-- Display final time
+- Instant vs delayed
 
 ## Wayyyyy todo: 
 - Send splits via bluetooth to phone app that connects to DB
+- Store splits on stick
