@@ -66,6 +66,7 @@ void loop(){
   uint16_t potV = analogRead(potPin);
   uint8_t pos = map(potV, 0, 1024, 0, 10);
   if (pos > maxPos) pos = maxPos;
+
   
   displayProg(pos);
 
@@ -73,7 +74,6 @@ void loop(){
   if (digitalRead(buttOpt) == LOW) {
     opt = pos;
   }
-
 }
 
 // *** PROGRAMS ***
@@ -101,6 +101,10 @@ void displayProg(uint8_t no) {
       }
       break;
     case 3:
+      displayProgText(no);
+      if (digitalRead(buttStart) == LOW) {
+        readSplits();
+      }
       break;
     case 9:
       displayProgText(no);
@@ -114,7 +118,6 @@ void displayProg(uint8_t no) {
     default:
       displayProgText(no);
       break;
-    
   }
 }
 
@@ -146,21 +149,20 @@ void drawTimerTimed(uint8_t no) {
 
 // Shot timer - Starts with regular draw, times and tracks shots. 
 void shotTimer() {
-
   drawTimer(1);
-
   display.invertDisplay(true);
-
   uint32_t startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
     uint16_t out = mic();
     if (out > micTreshold) {
       unsigned long cur = millis() - startMillis;
-        uint16_t s = (uint16_t)(cur / 1000UL);
-        uint8_t cs = (uint8_t)((cur % 1000UL) / 10UL); // centiseconds 0..99
-        splitSecs[counter] = s;
-        splitTenths[counter] = cs;
+      uint16_t s = (uint16_t)(cur / 1000UL);
+      uint8_t cs = (uint8_t)((cur % 1000UL) / 10UL); // centiseconds 0..99
+      splitSecs[counter] = s;
+      splitTenths[counter] = cs;
       counter ++;
+
+      if (counter >= maxSplits) counter = maxSplits;
 
       display.clearDisplay();
       display.setTextSize(3);
@@ -176,8 +178,30 @@ void shotTimer() {
       delay(10); 
     }
   }
-  printAllSplits();
   display.invertDisplay(false);
+}
+
+// reading stored splits after action
+void readSplits() {
+  while (digitalRead(buttOpt) == HIGH) {
+
+    uint16_t potV = analogRead(potPin);
+    uint8_t pos = map(potV, 0, 1024, 0, counter);
+    
+    display.clearDisplay();
+    display.setTextSize(3);
+    display.setCursor(55, 6); 
+    display.print(pos+1);
+    display.setCursor(20, 36);
+    if (splitSecs[pos] < 10) display.print('0');
+    display.print(splitSecs[pos]);
+    display.print('.');
+    if (splitTenths[pos] < 10) display.print('0'); 
+    display.print(splitTenths[pos]);
+    display.println();
+    display.display();
+    delay(10); 
+  }
 }
 
 // cpp moment
@@ -190,26 +214,14 @@ void resetAll() {
   Serial.println("Reset");
 }
 
-void printAllSplits() {
-  uint8_t i = 0;
-  while (i < counter) {
-    Serial.print(splitSecs[i]);
-    Serial.print('.');
-    Serial.print(splitTenths[i]);
-    Serial.println();
-    i++;
-  }
-}
-
 // Initializes microphone
 uint16_t mic() {
   uint32_t startMillis = millis(); // Start of sample window
   uint16_t signalMax = 0;
   uint16_t signalMin = 1024;
 
-  // collect data for 50 ms and then plot data
-  while (millis() - startMillis < sampleWindow)
-  {
+  // collect data for 50 ms 
+  while (millis() - startMillis < sampleWindow) {
     sample = analogRead(ampPin);
     if (sample < 1024) {
       if (sample > signalMax) {
@@ -220,7 +232,7 @@ uint16_t mic() {
       }
     }
   }
-  return signalMax - signalMin;  // max - min = peak-peak amplitude
+  return signalMax - signalMin;  // peak amplitude
 }
 
 // buzzer beep
