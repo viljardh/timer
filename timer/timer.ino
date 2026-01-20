@@ -32,12 +32,6 @@ long splitTenths[50];
 #define OLED_RESET     -1
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-int ballX = 64;
-int ballY = 32;
-int ballDX = 2;
-int ballDY = 2;
-int ballRadius = 3;
-
 // handy to have!
 long randInt;
 int i;
@@ -77,25 +71,12 @@ void loop(){
     pos = 9;
   }
   
-  // Show dynamic message
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(4, 28);
-  display.print("Pot pos: ");
-  display.println(pos);
-  display.display();
-  delay(100);  // Controls speed
+  displayProg(pos);
 
-  // // If startbutton is pressed, start program
-  // if (digitalRead(buttStart) == LOW) {
-  //   runProg(pos);
-  // }
-
-  // // Button for options (set timer in seconds)
-  // if (digitalRead(buttOpt) == LOW) {
-  //   beep();
-  //   opt = pos;
-  // }
+  // Button for options (set timer in seconds)
+  if (digitalRead(buttOpt) == LOW) {
+    opt = pos;
+  }
 
 }
 
@@ -196,44 +177,46 @@ void runProg(int pos) {
   }
 }
 
-// Numbers displays
-
-// void displayNumber(int no) {
-//   if (no > 9) {
-//     no = no % 10;
-//   }
-//   switch (no) {
-//     case 0:
-//       numberZero();
-//     case 1:
-//       numberOne();
-//       break;
-//     case 2:
-//       numberTwo();
-//       break;
-//     case 3:
-//       numberThree();
-//       break;
-//     case 4:
-//       numberFour();
-//       break;
-//     case 5:
-//       numberFive();
-//       break;
-//     case 6:
-//       numberSix();
-//       break;
-//     case 7:
-//       numberSeven();
-//       break;
-//     case 8:
-//       numberEight();
-//       break;
-//     case 9:
-//       numberNine();
-//       break;
-//   }
-// }
+// display program
+void displayProg(int no) {
+  switch(no) {
+    case 0:
+      displayText("Draw timer");
+      // If startbutton is pressed, start program
+      if (digitalRead(buttStart) == LOW) {
+        runProg(no);
+      }
+      break;
+    case 1:
+      displayText("Objective timer");
+      break;
+    case 2:
+      //insert
+      break;
+    case 3:
+      //insert
+      break;
+    case 4:
+      //insert
+      break;
+    case 5:
+      //insert
+      break;
+    case 6:
+      //insert
+      break;
+    case 7:
+      //insert
+      break;
+    case 8:
+      //insert
+      break;
+    case 9:
+      //insert
+      break;
+    
+  }
+}
 
 // Initializes microphone
 int mic() {
@@ -269,32 +252,15 @@ void beep() {
   digitalWrite(buzzPin, LOW);
 }
 
-void ball() {
+void displayText(String text) {
   display.clearDisplay();
-
-  // Update ball position
-  ballX += ballDX;
-  ballY += ballDY;
-
-  // Bounce off edges
-  if (ballX <= ballRadius || ballX >= (SCREEN_WIDTH - ballRadius)) {
-    ballDX = -ballDX;
-  }
-  if (ballY <= ballRadius || ballY >= (SCREEN_HEIGHT - ballRadius)) {
-    ballDY = -ballDY;
-  }
-
-  // Draw ball
-  display.fillCircle(ballX, ballY, ballRadius, SSD1306_WHITE);
-
-  // Show dynamic message
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.print("X:");
-  display.print(ballX);
-  display.print(" Y:");
-  display.print(ballY);
-
+  display.print("Prog: ");
+  display.println(pos+1);
+  display.println(text);
+  display.print("Option: ");
+  display.println(opt);
   display.display();
-  delay(30);  // Controls speed
+  delay(10); 
 }
