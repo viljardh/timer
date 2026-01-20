@@ -1,22 +1,17 @@
-// init 7-seg pos
-const int a = 7;
-const int b = 6;
-const int c = 11;
-const int d = 12;
-const int e = 13;
-const int f = 8;
-const int g = 9;
-const int dp = 10;
-const int anode = 5;
-const int piezoOut = 3;
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+// init buzzer
+const int buzzPin = 3;
 
 // init buttons and options "menu"
 const int buttStart = 2;
 const int buttOpt = 4;
 int opt;
 
-// using a potmeter for options 
-const int potPin = A5;
+// init potmeter
+const int potPin = A1;
 int potV;
 int pos;
 
@@ -31,49 +26,67 @@ int counter = 0;
 long splitSecs[50];
 long splitTenths[50];
 
+// init screen
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET     -1
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+int ballX = 64;
+int ballY = 32;
+int ballDX = 2;
+int ballDY = 2;
+int ballRadius = 3;
+
 // handy to have!
 long randInt;
+int i;
 
 void setup() {
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(4, 28);
+  display.println("Go fast, don't suck!");
+  display.display();
+  delay(2000); 
   Serial.begin(9600);
   randomSeed(analogRead(0));
-
-  int i;
-  for (i = 5;i<=13;i++) {
-    pinMode(i, OUTPUT);
-    digitalWrite(i, HIGH);
-  }
+  
+  pinMode(buzzPin, OUTPUT);
   pinMode(buttStart, INPUT_PULLUP);
   pinMode(buttOpt, INPUT_PULLUP);
 
-  digitalWrite(anode, HIGH);
 
-  sayHi();
-  clearDisplay();
+  beep();
 }
 
 void loop(){
+
+  ball();
   // Read potmeter and assign number
   // higher values get shorter range, so assign 9 and 10 to 9
   // stupid fix for stupid problem
-  potV = analogRead(potPin);
-  pos = map(potV, 0, 1024, 0, 10);
-  if (pos == 10) {
-    pos = 9;
-  }
+  // potV = analogRead(potPin);
+  // pos = map(potV, 0, 1024, 0, 10);
+  // if (pos == 10) {
+  //   pos = 9;
+  // }
   
-  displayNumber(pos);
+  // //displayNumber(pos);
 
-  // If startbutton is pressed, start program
-  if (digitalRead(buttStart) == LOW) {
-    runProg(pos);
-  }
+  // // If startbutton is pressed, start program
+  // if (digitalRead(buttStart) == LOW) {
+  //   runProg(pos);
+  // }
 
-  // Button for options (set timer in seconds)
-  if (digitalRead(buttOpt) == LOW) {
-    tone(piezoOut, 100, 100);
-    opt = pos;
-  }
+  // // Button for options (set timer in seconds)
+  // if (digitalRead(buttOpt) == LOW) {
+  //   beep();
+  //   opt = pos;
+  // }
 
 }
 
@@ -83,11 +96,11 @@ void loop(){
 // Addition: Opt position now denotes how many shots you want to do in series
 // So I don't have to reset every flippin time
 void drawTimer() {
-  tone(piezoOut, 240, 100);
+  beep();
   for (int i = 0; i < opt; i++) {
     randInt = random(2000, 5000);
     delay(randInt);
-    tone(piezoOut, 240, 100);
+  beep();
   }
 }
 
@@ -98,7 +111,7 @@ void drawTimerTimed(int pos) {
   randInt = random(2000, 5000);
   drawTimer();
   delay(pos*1000);
-  tone(piezoOut, 240, 100);
+  beep();
 }
 
 // Shot timer - Starts with regular draw, times and tracks shots. 
@@ -108,7 +121,7 @@ void shotTimer() {
   while (digitalRead(buttOpt) == HIGH) {
     // for some reason displays 1 when counter is 0, no idea why
     // pray it away when I get OLED
-    displayNumber(counter);
+    //displayNumber(counter);
     int out = mic();
     //Serial.println(out);
     if (out > micTreshold) {
@@ -145,7 +158,7 @@ void printAllSplits() {
 
 // Runs program based on pot pos
 void runProg(int pos) {
-  letterA();
+  //letterA();
   switch (pos) {
     case 0:
       drawTimer();
@@ -176,52 +189,42 @@ void runProg(int pos) {
 
 // Numbers displays
 
-void displayNumber(int no) {
-  if (no > 9) {
-    no = no % 10;
-  }
-  switch (no) {
-    case 0:
-      numberZero();
-    case 1:
-      numberOne();
-      break;
-    case 2:
-      numberTwo();
-      break;
-    case 3:
-      numberThree();
-      break;
-    case 4:
-      numberFour();
-      break;
-    case 5:
-      numberFive();
-      break;
-    case 6:
-      numberSix();
-      break;
-    case 7:
-      numberSeven();
-      break;
-    case 8:
-      numberEight();
-      break;
-    case 9:
-      numberNine();
-      break;
-  }
-}
-
-// Print print functions
-void sayHi() {
-  letterH();
-  delay(333);
-  letterE();
-  delay(333);
-  letterI();
-  delay(333);
-}
+// void displayNumber(int no) {
+//   if (no > 9) {
+//     no = no % 10;
+//   }
+//   switch (no) {
+//     case 0:
+//       numberZero();
+//     case 1:
+//       numberOne();
+//       break;
+//     case 2:
+//       numberTwo();
+//       break;
+//     case 3:
+//       numberThree();
+//       break;
+//     case 4:
+//       numberFour();
+//       break;
+//     case 5:
+//       numberFive();
+//       break;
+//     case 6:
+//       numberSix();
+//       break;
+//     case 7:
+//       numberSeven();
+//       break;
+//     case 8:
+//       numberEight();
+//       break;
+//     case 9:
+//       numberNine();
+//       break;
+//   }
+// }
 
 // Initializes microphone
 int mic() {
@@ -251,143 +254,40 @@ int mic() {
   return peakToPeak;
 }
 
-// *** NUMBERS ***
-
-void numberOne() {
-  clearDisplay();
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
+void beep() {
+  digitalWrite(buzzPin, HIGH);
+  delay(100);
+  digitalWrite(buzzPin, LOW);
 }
 
-void numberTwo() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(g, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(d, LOW);
-}
+void ball() {
+  display.clearDisplay();
 
-void numberThree() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(g, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(d, LOW);
-}
+  // Update ball position
+  ballX += ballDX;
+  ballY += ballDY;
 
-void numberFour() {
-  clearDisplay();
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-}
+  // Bounce off edges
+  if (ballX <= ballRadius || ballX >= (SCREEN_WIDTH - ballRadius)) {
+    beep();
+    ballDX = -ballDX;
+  }
+  if (ballY <= ballRadius || ballY >= (SCREEN_HEIGHT - ballRadius)) {
+    beep();
+    ballDY = -ballDY;
+  }
 
-void numberFive() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(d, LOW);
-}
+  // Draw ball
+  display.fillCircle(ballX, ballY, ballRadius, SSD1306_WHITE);
 
-void numberSix() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(d, LOW);
-  digitalWrite(c, LOW);
-}
+  // Show dynamic message
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print("X:");
+  display.print(ballX);
+  display.print(" Y:");
+  display.print(ballY);
 
-void numberSeven() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
+  display.display();
+  delay(30);  // Controls speed
 }
-
-void numberEight() {
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(d, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-}
-
-void numberNine() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(d, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-}
-
-void numberZero() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(d, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(f, LOW);
-}
-
-void dot() {
-  clearDisplay();
-  digitalWrite(dp, LOW);
-}
-
-// *** LETTERS ***
-
-void letterA() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-}
-
-void letterH() {
-  clearDisplay();
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-}
-void letterE() {
-  clearDisplay();
-  digitalWrite(a, LOW);
-  digitalWrite(d, LOW);
-  digitalWrite(e, LOW);
-  digitalWrite(f, LOW);
-  digitalWrite(g, LOW);
-}
-void letterI() {
-  clearDisplay();
-  digitalWrite(b, LOW);
-  digitalWrite(c, LOW);
-}
-
-void clearDisplay() {
-  digitalWrite(a, HIGH);
-  digitalWrite(b, HIGH);
-  digitalWrite(c, HIGH);
-  digitalWrite(d, HIGH);
-  digitalWrite(e, HIGH);
-  digitalWrite(f, HIGH);
-  digitalWrite(g, HIGH);
-  digitalWrite(dp, HIGH);
-}
-
