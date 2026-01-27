@@ -12,7 +12,7 @@ uint8_t opt = 1;
 
 // init potmeter
 const uint8_t potPin = A1;
-const uint8_t maxPos = 9;
+//const uint8_t maxPos = 9;
 
 // init for mic
 const uint8_t sampleWindow = 50;
@@ -35,6 +35,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // handy to have!
 unsigned long randInt = 0UL;
+
+// flag for instant vs delayed beep on press
+bool delayed = true;
 
 void setup() {
   Serial.begin(115200);
@@ -62,11 +65,9 @@ void setup() {
 void loop(){
 
   // Read potmeter and assign number
-  // higher values get shorter range, so assign 9 and 10 to 9
-  // stupid fix for stupid problem
   uint16_t potV = analogRead(potPin);
-  uint8_t pos = map(potV, 0, 1024, 0, 10);
-  if (pos > maxPos) pos = maxPos;
+  uint8_t pos = map(potV, 0, 1024, 0, 11);
+  //if (pos > maxPos) pos = maxPos;
 
   
   displayProg(pos);
@@ -77,6 +78,7 @@ void loop(){
   if (digitalRead(buttOpt) == LOW) {
     opt = pos;
   }
+
 }
 
 // *** PROGRAMS ***
@@ -112,7 +114,14 @@ void displayProg(uint8_t no) {
       }
       break;
     case 9:
-      displayProgText(no);
+      displayOpt('D', 'L', 'Y');
+      if (digitalRead(buttStart) == LOW) {
+        delayed = !delayed;
+      }
+      display.invertDisplay(false);
+      break;
+    case 10:
+      displayOpt('R', 'S', 'T');
       if (digitalRead(buttStart) == LOW) {
         display.invertDisplay(true);
         delay(250);
@@ -258,13 +267,50 @@ void beep() {
 // displays program and option
 void displayProgText(uint8_t pos) {
   display.clearDisplay();
+  displayDelay();
   display.setTextSize(3);
-  display.setCursor(50, 6);
+  display.setCursor(50, 10);
   display.print('P');
   display.println(pos);
-  display.setCursor(50, 30);
+  if(opt == 10) {
+    display.setCursor(40, 34);
+  } else {
+    display.setCursor(50, 34);
+  }
   display.print('O');
   display.println(opt);
   display.display();
-  delay(10); 
+  delay(10);
+}
+// displays program and option
+void displayOpt(char a, char b, char c) {
+  display.clearDisplay();
+  displayDelay();
+  display.setTextSize(3);
+  display.setCursor(40, 10);
+  display.print(a);
+  display.print(b);
+  display.println(c);
+  if(opt == 10) {
+    display.setCursor(40, 34);
+  } else {
+    display.setCursor(50, 34);
+  }
+  display.print('O');
+  display.println(opt);
+  display.display();
+  delay(10);
+}
+
+// suggested by others, leaving for now
+void displayDelay() {
+  if (delayed) {
+    display.setCursor(0,0);
+    display.setTextSize(1);
+    display.println('D');
+  }
+}
+
+void addDelay() {
+  if (delayed) delay(3000);
 }
