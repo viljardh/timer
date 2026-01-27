@@ -15,7 +15,9 @@ Needs a bit of testing for components.
 
 - Test levels for microphone
 - Instant vs delayed
+- Reaction time 
 
 ## Wayyyyy todo: 
-- Send splits via bluetooth to phone app that connects to DB
+- Send splits via bluetooth to phone app
+- Connect phone to DB backend
 - Store splits on stick
