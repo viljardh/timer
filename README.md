@@ -10,14 +10,14 @@ Needs a bit of testing for components.
 - Shot timer - Random draw, tracks amount of shots and splits
 - Split overview
 
-## Todo: 
+## Working on: 
 - Test levels for microphone
 - Instant vs delayed
 - Reaction time 
 - Menu overhaul
 - Dry/live mode
 
-## Wayyyyy todo: 
+## Down the line: 
 - Send splits via bluetooth to phone app
 - Connect phone to DB backend
 - Store splits on stick
