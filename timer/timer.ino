@@ -36,8 +36,9 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 // handy to have!
 unsigned long randInt = 0UL;
 
-// flag for instant vs delayed beep on press
+// flags
 bool delayed = true;
+bool dry = true;
 
 void setup() {
   Serial.begin(115200);
@@ -113,12 +114,19 @@ void displayProg(uint8_t no) {
         readSplits();
       }
       break;
+    case 8:
+      displayOpt('D', 'R', 'Y');
+      if (digitalRead(buttStart) == LOW) {
+        dry = !dry;
+      }
+      delay(100);
+      break;
     case 9:
       displayOpt('D', 'L', 'Y');
       if (digitalRead(buttStart) == LOW) {
         delayed = !delayed;
       }
-      display.invertDisplay(false);
+      delay(100);
       break;
     case 10:
       displayOpt('R', 'S', 'T');
@@ -268,6 +276,7 @@ void beep() {
 void displayProgText(uint8_t pos) {
   display.clearDisplay();
   displayDelay();
+  displayDryLive();
   display.setTextSize(3);
   display.setCursor(50, 10);
   display.print('P');
@@ -286,6 +295,7 @@ void displayProgText(uint8_t pos) {
 void displayOpt(char a, char b, char c) {
   display.clearDisplay();
   displayDelay();
+  displayDryLive();
   display.setTextSize(3);
   display.setCursor(40, 10);
   display.print(a);
@@ -307,7 +317,25 @@ void displayDelay() {
   if (delayed) {
     display.setCursor(0,0);
     display.setTextSize(1);
-    display.println('D');
+    display.print('D');
+    display.print('L');
+    display.println('Y');
+  }
+}
+
+// dry/live fire
+void displayDryLive() {
+  display.setCursor(0, 57);
+  display.setTextSize(1);
+  if (dry) {
+    display.print('D');
+    display.print('R');
+    display.println('Y');
+  } else {
+    display.print('L');
+    display.print('I');
+    display.print('V');
+    display.println('E');
   }
 }
 
