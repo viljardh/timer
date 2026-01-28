@@ -12,7 +12,6 @@ uint8_t opt = 1;
 
 // init potmeter
 const uint8_t potPin = A1;
-//const uint8_t maxPos = 9;
 
 // init for mic
 const uint8_t sampleWindow = 50;
@@ -68,9 +67,7 @@ void loop(){
   // Read potmeter and assign number
   uint16_t potV = analogRead(potPin);
   uint8_t pos = map(potV, 0, 1024, 0, 11);
-  //if (pos > maxPos) pos = maxPos;
 
-  
   displayProg(pos);
 
   // Button for options (set timer in seconds)
@@ -203,7 +200,11 @@ void shotTimer() {
       // There's no prettier way of doing this
       display.clearDisplay();
       display.setTextSize(3);
-      display.setCursor(50, 6);
+      if (counter > 9) {
+        display.setCursor(49, 6);
+      } else {
+        display.setCursor(56, 6);
+      }
       display.println(counter);
       display.setCursor(20, 30);
       if (splitSecs[counter - 1] < 10) display.print('0'); 
@@ -251,7 +252,6 @@ void resetAll() {
     splitTenths[i] = 0;
   }
   counter = 0;
-  Serial.println("Reset");
 }
 
 // Initializes microphone
@@ -291,7 +291,7 @@ void displayBigNumber(uint8_t pos) {
 }
 
 //displays program and option
-// probably won't need this
+// probably won't need this, but keeping for now
 void displayProgText(uint8_t pos) {
   display.clearDisplay();
   displayDelay();
@@ -312,6 +312,7 @@ void displayProgText(uint8_t pos) {
   display.display();
   delay(10);
 }
+
 // displays program and option
 void displayOpt(char a, char b, char c, uint8_t pos) {
   display.clearDisplay();
@@ -339,6 +340,7 @@ void displayDelay() {
   }
 }
 
+// reusing the name, deal with it
 void displayOpt() {
   if (opt == 10) {
     display.setCursor(115, 0);
@@ -360,6 +362,7 @@ void displayPos(uint8_t no) {
 }
 
 // dry/live fire
+// maybe do something with later, idk 
 void displayDryLive() {
   display.setCursor(0, 57);
   display.setTextSize(1);
