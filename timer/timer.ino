@@ -90,46 +90,46 @@ void loop(){
 void displayProg(uint8_t no) {
   switch(no) {
     case 0:
-      displayProgText(no);
+      displayOpt('D', 'R', 'W', no);
       // If startbutton is pressed, start program
       if (digitalRead(buttStart) == LOW) {
         dryDraw(opt);
       }
       break;
     case 1:
-      displayProgText(no);
+      displayOpt('D', 'T', 'M', no);
       if (digitalRead(buttStart) == LOW) {
         dryDrawTimed(opt);
       }
       break;
     case 2:
-      displayProgText(no);
+      displayOpt('S', 'H', 'T', no);
       if (digitalRead(buttStart) == LOW) {
         shotTimer();
       }
       break;
     case 7:
-      displayOpt('S', 'P', 'T');
+      displayOpt('S', 'P', 'T', no);
       if (digitalRead(buttStart) == LOW) {
         readSplits();
       }
       break;
     case 8:
-      displayOpt('D', 'R', 'Y');
+      displayOpt('D', 'R', 'Y', no);
       if (digitalRead(buttStart) == LOW) {
         dry = !dry;
       }
       delay(250);
       break;
     case 9:
-      displayOpt('D', 'L', 'Y');
+      displayOpt('D', 'L', 'Y', no);
       if (digitalRead(buttStart) == LOW) {
         delayed = !delayed;
       }
       delay(250);
       break;
     case 10:
-      displayOpt('R', 'S', 'T');
+      displayOpt('R', 'S', 'T', no);
       if (digitalRead(buttStart) == LOW) {
         display.invertDisplay(true);
         delay(250);
@@ -138,7 +138,7 @@ void displayProg(uint8_t no) {
       display.invertDisplay(false);
       break;
     default:
-      displayBigNumber(no);
+      displayOpt('-', '-', '-', no);
       break;
   }
 }
@@ -290,11 +290,14 @@ void displayBigNumber(uint8_t pos) {
   display.display();
 }
 
-// displays program and option
+//displays program and option
+// probably won't need this
 void displayProgText(uint8_t pos) {
   display.clearDisplay();
   displayDelay();
   displayDryLive();
+  displayOpt();
+  displayPos(pos);
   display.setTextSize(3);
   display.setCursor(50, 10);
   display.print('P');
@@ -310,22 +313,17 @@ void displayProgText(uint8_t pos) {
   delay(10);
 }
 // displays program and option
-void displayOpt(char a, char b, char c) {
+void displayOpt(char a, char b, char c, uint8_t pos) {
   display.clearDisplay();
   displayDelay();
   displayDryLive();
+  displayPos(pos);
+  displayOpt();
   display.setTextSize(3);
-  display.setCursor(40, 10);
+  display.setCursor(40, 20);
   display.print(a);
   display.print(b);
   display.println(c);
-  if(opt == 10) {
-    display.setCursor(40, 34);
-  } else {
-    display.setCursor(50, 34);
-  }
-  display.print('O');
-  display.println(opt);
   display.display();
   delay(10);
 }
@@ -339,6 +337,26 @@ void displayDelay() {
     display.print('L');
     display.println('Y');
   }
+}
+
+void displayOpt() {
+  if (opt == 10) {
+    display.setCursor(115, 0);
+  } else {
+    display.setCursor(120, 0);
+  }
+  display.setTextSize(1);
+  display.println(opt);
+}
+
+void displayPos(uint8_t no) {
+  if (no == 10) {
+    display.setCursor(115, 57);
+  } else {
+    display.setCursor(120, 57);
+  }
+  display.setTextSize(1);
+  display.println(no);
 }
 
 // dry/live fire
