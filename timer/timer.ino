@@ -18,7 +18,7 @@ const uint8_t potPin = A1;
 const uint8_t sampleWindow = 50;
 const uint8_t ampPin = A0;
 uint16_t sample;
-const uint8_t micTreshold = 200; //REALLY LOW, GONNA MAX  TO OL' 1023
+const uint8_t micTreshold = 100; //REALLY LOW, GONNA MAX  TO OL' 1023
 
 // tracking shooting stats
 // May increase if necessary, but SRAM is insanely limited
@@ -93,13 +93,13 @@ void displayProg(uint8_t no) {
       displayProgText(no);
       // If startbutton is pressed, start program
       if (digitalRead(buttStart) == LOW) {
-        drawTimer(opt);
+        dryDraw(opt);
       }
       break;
     case 1:
       displayProgText(no);
       if (digitalRead(buttStart) == LOW) {
-        drawTimerTimed(opt);
+        dryDrawTimed(opt);
       }
       break;
     case 2:
@@ -108,8 +108,8 @@ void displayProg(uint8_t no) {
         shotTimer();
       }
       break;
-    case 3:
-      displayProgText(no);
+    case 7:
+      displayOpt('S', 'P', 'T');
       if (digitalRead(buttStart) == LOW) {
         readSplits();
       }
@@ -119,14 +119,14 @@ void displayProg(uint8_t no) {
       if (digitalRead(buttStart) == LOW) {
         dry = !dry;
       }
-      delay(100);
+      delay(250);
       break;
     case 9:
       displayOpt('D', 'L', 'Y');
       if (digitalRead(buttStart) == LOW) {
         delayed = !delayed;
       }
-      delay(100);
+      delay(250);
       break;
     case 10:
       displayOpt('R', 'S', 'T');
@@ -138,7 +138,7 @@ void displayProg(uint8_t no) {
       display.invertDisplay(false);
       break;
     default:
-      displayProgText(no);
+      displayBigNumber(no);
       break;
   }
 }
@@ -146,7 +146,7 @@ void displayProg(uint8_t no) {
 // Simple draw timer - Simulates random beep going off during contest
 // Addition: Opt position now denotes how many shots you want to do in series
 // So I don't have to reset every flippin time
-void drawTimer(uint8_t no) {
+void dryDraw(uint8_t no) {
   beep();
   display.invertDisplay(true);
   for (uint8_t i = 0; i < no; i++) {
@@ -160,9 +160,9 @@ void drawTimer(uint8_t no) {
 // First programmable program - Extension of draw timer, but you can set
 // amount of seconds before next beep goes off, giving yourself x seconds
 // to achieve objective
-void drawTimerTimed(uint8_t no) {
+void dryDrawTimed(uint8_t no) {
   randInt = random(2000UL, 5000UL);
-  drawTimer(1);
+  dryDraw(1);
   // Invert display to light up, signify activity
   display.invertDisplay(true);
   delay(no*1000);
@@ -172,8 +172,17 @@ void drawTimerTimed(uint8_t no) {
 
 // Shot timer - Starts with regular draw, times and tracks shots. 
 void shotTimer() {
-  drawTimer(1);
+  if(delayed) {
+    displayBigNumber(3);
+    delay(1000);
+    displayBigNumber(2);
+    delay(1000);
+    displayBigNumber(1);
+    delay(1000);
+  } 
   display.invertDisplay(true);
+  displayBigNumber(0);
+  beep();
   // Starts timer
   uint32_t startMillis = millis();
   while (digitalRead(buttOpt) == HIGH) {
@@ -206,6 +215,7 @@ void shotTimer() {
       delay(10); 
     }
   }
+  delay(250);
   display.invertDisplay(false);
 }
 
@@ -270,6 +280,14 @@ void beep() {
   digitalWrite(buzzPin, HIGH);
   delay(100);
   digitalWrite(buzzPin, LOW);
+}
+
+void displayBigNumber(uint8_t pos) {
+  display.clearDisplay();
+  display.setCursor(44, 4);
+  display.setTextSize(8);
+  display.println(pos);
+  display.display();
 }
 
 // displays program and option
