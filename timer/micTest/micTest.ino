@@ -17,7 +17,7 @@ const uint8_t potPin = A1;
 const uint8_t sampleWindow = 50;
 const uint8_t ampPin = A0;
 uint16_t sample;
-const uint8_t micTreshold = 500; //REALLY LOW, GONNA MAX  TO OL' 1023
+const uint8_t micTreshold = 100; //REALLY LOW, GONNA MAX  TO OL' 1023
 
 // tracking shooting stats
 // May increase if necessary, but SRAM is insanely limited
@@ -134,7 +134,7 @@ void micTest() {
       if (counter >= maxSplits) counter = maxSplits;
 
       // There's no prettier way of doing this
-      display.clearDisplay();r
+      display.clearDisplay();
       display.setTextSize(3);
       if (counter > 9) {
         display.setCursor(49, 6);
@@ -197,6 +197,8 @@ uint16_t mic() {
   // collect data for 50 ms 
   while (millis() - startMillis < sampleWindow) {
     sample = analogRead(ampPin);
+    Serial.print("Sample: ");
+    Serial.println(sample);
     if (sample < 1024) {
       if (sample > signalMax) {
         signalMax = sample;  // save just the max levels
