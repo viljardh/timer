@@ -17,7 +17,7 @@ const uint8_t potPin = A1;
 const uint8_t sampleWindow = 50;
 const uint8_t ampPin = A0;
 uint16_t sample;
-const uint8_t micTreshold = 100; //REALLY LOW, GONNA MAX  TO OL' 1023
+const uint8_t micTreshold = 500; //REALLY LOW, GONNA MAX  TO OL' 1023
 
 // tracking shooting stats
 // May increase if necessary, but SRAM is insanely limited
@@ -123,8 +123,8 @@ void micTest() {
     uint16_t out = mic();
     // If noise is substantial enough
     if (out > micTreshold) {
-      Serial.print("P2P: ");
-      Serial.println(out);
+      //Serial.print("P2P: ");
+      //Serial.println(out);
       // Do a checkpoint and store splits
       uint16_t s = out;
       P2P[counter] = s;
@@ -197,8 +197,8 @@ uint16_t mic() {
   // collect data for 50 ms 
   while (millis() - startMillis < sampleWindow) {
     sample = analogRead(ampPin);
-    Serial.print("Sample: ");
-    Serial.println(sample);
+    //Serial.print("Sample: ");
+    //Serial.println(sample);
     if (sample < 1024) {
       if (sample > signalMax) {
         signalMax = sample;  // save just the max levels
@@ -208,6 +208,8 @@ uint16_t mic() {
       }
     }
   }
+  int a = signalMax - signalMin;
+  Serial.println(a);
   return signalMax - signalMin;  // peak amplitude
 }
 
