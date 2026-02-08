@@ -34,16 +34,20 @@ translate([width*2, 10, 0]) {
             translate([3, -1, -2]) {
                 cube([swidth, sheight, 5]);
             }
-            translate([length/2 + 2, width/2 + 2, -2]) {
+            translate([length/2 + 4, width/2 + 2, -2]) {
                 cylinder(h=height, r = 4.9, center = true);
             }
-            translate([length/5, width/2, -2]) {
+            translate([length/5 + 8, width/2 + 2, -2]) {
                 cylinder(h=height, r = 2.9, center = true);
+            }
+            
+            translate([length/2 - 25, width/2 - 4, -2]) {
+                cube([12, 11, 5]);
             }
         }
     }
 }
-
+// usb-b 12*11mm
 
 module roundedBox(length, width, height, radius) {
     
