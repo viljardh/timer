@@ -23,8 +23,8 @@ translate([width*2, 10, 0]) {
             union() {
                 roundedBox(length, width, 1, radius);
                 difference() {
-                    translate([1, 1, -1]) {
-                        roundedBox(length-2, width-2, 4, radius);
+                    translate([1, 1, 0]) {
+                        roundedBox(length-2, width-2, 3, radius);
                     }
                     translate([2, 2, 0]) {
                         roundedBox(length-4, width-4, 4, radius);
