@@ -72,6 +72,19 @@ translate([10, 10, 0]){
                     screwHole(); 
                 }
                 
+                // Buzzholes
+                translate([width/3 + 6, 9, 0]) {
+                    screwHole();
+                }
+                translate([width/3 + 6, -3, 0]) {
+                    screwHole();
+                }
+                translate([8, -3, 0]) {
+                    screwHole();
+                }
+                translate([8, 9, 0]) {
+                    screwHole();
+                }
             }
         }
         
@@ -97,7 +110,7 @@ translate([10, 10, 0]){
             cylinder(h=5, r=buzzRadius, center = true);
         }
         // Potmeter
-        translate([6, 2, 0]) {
+        translate([2, 2, 0]) {
             cylinder(h=5, r=potRadius, center = true);
         }
         
