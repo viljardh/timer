@@ -39,10 +39,40 @@ usbHeight = 3.8;
 translate([10, 10, 0]){ 
     difference() {
         
-        // Box
+        // Box  
         roundedBox(length, width, height, radius);
+        
         translate([1, 1, 1]) {
-            roundedBox(length-2, width-2, height, radius);
+            difference() {
+                // Box interior
+                roundedBox(length-2, width-2, height, radius);
+                
+                // Shelf, cubes and stuff go here
+                // God damn this is gonna be finnicky
+                
+                // Screenholes
+                translate([width/2+2, height+sHeight-1, 0]) {
+                    screwHole(); 
+                }
+                translate([sWidth/2-6, height+sHeight-1, 0]) {
+                    screwHole(); 
+                }
+                translate([sWidth/2-6, height-5, 0]) {
+                    screwHole(); 
+                }
+                translate([width/2+2, height-5, 0]) {
+                    screwHole(); 
+                }
+                
+                // Micholes
+                translate([2, height+sHeight+2, 0]) {
+                    screwHole(); 
+                }
+                translate([-7, height+sHeight+2, 0]) {
+                    screwHole(); 
+                }
+                
+            }
         }
         
         // Screen
@@ -52,7 +82,7 @@ translate([10, 10, 0]){
         }
         // Mic
         translate([0, height+sHeight, 0]) {
-            cylinder(h=5, r=micRadius, center = true);
+            cylinder(h=20, r=micRadius, center = true);
         }
         // Button 1
         translate([0, height, 0]) {
@@ -95,11 +125,20 @@ translate([width*2, 10, 0]) {
 // usb-b 12*11mm
 
 module roundedBox(length, width, height, radius) {
-    
-    dRadius = 2*radius;
-    
+    dRadius = 2*radius;    
     minkowski() {
         cube(size=[width-dRadius, length-dRadius, height]);
         cylinder(r=radius, h=0.01);
     }
 }
+
+module screwHole() {
+    difference() {
+        cube(4);
+        translate([2, 2, -1]) {
+            cylinder(h=10,r=1,center=false);
+        }
+    }
+}
+
+
