@@ -38,18 +38,37 @@ usbHeight = 3.8;
 // Box
 translate([10, 10, 0]){ 
     difference() {
+        
+        // Box
         roundedBox(length, width, height, radius);
         translate([1, 1, 1]) {
             roundedBox(length-2, width-2, height, radius);
         }
-        // Screem
-        translate([width/2-sWidth/2 + radius, height+sHeight-2, 0]) {
+        
+        // Screen
+        translate([width/2-sWidth/2 + 6, height+sHeight/2, 0]) {
             cube([sWidth, sHeight, 5], center = true);
             cylinder(h=5, r=micRadius, center = true);
         }
         // Mic
-        translate([0, height+sHeight-2, 0]) {
+        translate([0, height+sHeight, 0]) {
             cylinder(h=5, r=micRadius, center = true);
+        }
+        // Button 1
+        translate([0, height, 0]) {
+            cube([buttWidth, buttHeight, 5], center = true);
+        }
+        // Button 2
+        translate([0, height-10, 0]) {
+            cube([buttWidth, buttHeight, 5], center = true);
+        }
+        // Buzzer
+        translate([width/3 + 2, 6, 0]) {
+            cylinder(h=5, r=buzzRadius, center = true);
+        }
+        // Potmeter
+        translate([6, 2, 0]) {
+            cylinder(h=5, r=potRadius, center = true);
         }
         
     } 
