@@ -25,7 +25,8 @@ potHeight = 10.5;
 
 // button
 buttWidth = 6.2;
-buttHeight = 6.3;
+buttHeight = 6.2;
+buttDepth = 4.2;
 
 // screen
 sWidth = 25;
@@ -85,6 +86,19 @@ translate([10, 10, 0]){
                 translate([8, 9, 0]) {
                     screwHole();
                 }
+                
+                // Buttonhole 1
+                translate([3, height-5, 0]) {
+                    rotate([00, 00, 90]) {
+                    buttShelf();
+                    }
+                }
+                // Buttonhole 2
+                translate([-5, height-8, 0]) {
+                    rotate([00, 00, -90]) {
+                    buttShelf();
+                    }
+                }
             }
         }
         
@@ -99,11 +113,11 @@ translate([10, 10, 0]){
         }
         // Button 1
         translate([0, height, 0]) {
-            cube([buttWidth, buttHeight, 5], center = true);
+            cube([buttWidth, buttHeight, 3], center = true);
         }
         // Button 2
         translate([0, height-10, 0]) {
-            cube([buttWidth, buttHeight, 5], center = true);
+            cube([buttWidth, buttHeight, 3], center = true);
         }
         // Buzzer
         translate([width/3 + 2, 6, 0]) {
@@ -150,6 +164,15 @@ module screwHole() {
         cube(4);
         translate([2, 2, -1]) {
             cylinder(h=10,r=1,center=false);
+        }
+    }
+}
+
+module buttShelf() {
+    difference() {
+        cube([buttWidth+2, buttHeight+2, buttDepth+2]);
+        translate([1, 1, -1]) {
+            cube([buttWidth+3, buttHeight, buttDepth+1]);
         }
     }
 }
