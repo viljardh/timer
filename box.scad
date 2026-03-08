@@ -1,12 +1,15 @@
 //  Gotta at shelves for buttons and comps to lean on 
 // How in the hell am I gonna do that
+// the lovely thing is also that all buttons and such
+// must face up, not to the side because 3d-printing
+// unsupported holes on the side isn't very good
 
 $fn = 200;
 
 // box measures
-length = 70;
-width = 50;
-height = 30;
+length = 75;
+width = 55;
+height = 35;
 radius = 10;
 
 // mic measures
@@ -24,8 +27,13 @@ potHeight = 10.5;
 buttWidth = 6.2;
 buttHeight = 6.3;
 
-swidth = 24.5;
-sheight = 15.2;
+// screen
+sWidth = 25;
+sHeight = 14;
+
+// usb
+usbWidth = 7.7;
+usbHeight = 3.8;
 
 // Box
 translate([10, 10, 0]){ 
@@ -34,11 +42,20 @@ translate([10, 10, 0]){
         translate([1, 1, 1]) {
             roundedBox(length-2, width-2, height, radius);
         }
+        // Screem
+        translate([width/2-sWidth/2 + radius, height+sHeight-2, 0]) {
+            cube([sWidth, sHeight, 5], center = true);
+            cylinder(h=5, r=micRadius, center = true);
+        }
+        // Mic
+        translate([0, height+sHeight-2, 0]) {
+            cylinder(h=5, r=micRadius, center = true);
+        }
+        
     } 
-    // insert cutouts here
 }
 
-// Top
+// Bottom
 translate([width*2, 10, 0]) {
     mirror([1, 0, 0]) {
         difference() {
