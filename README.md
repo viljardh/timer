@@ -4,6 +4,8 @@ Prototype for shooting timer. Initially for dry fire, hopefully live down the li
 
 Needs a bit of testing for components. 
 
+Still designing box. Turns out 3D-modeling is difficult!
+
 ## Features: 
 - Random draw timer
 - Random draw timer with adjustable time to complete task
